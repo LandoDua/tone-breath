@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sesión de Respiración - Tone Breath</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Custom Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2d3133",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#00201c",
+                    "on-primary-container": "#00423b",
+                    "primary-container": "#14b8a6",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "secondary-fixed": "#d5e3fd",
+                    "on-tertiary-fixed": "#3a0b00",
+                    "tertiary-fixed": "#ffdbd0",
+                    "on-surface": "#191c1e",
+                    "dark-surface": "#1E293B",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-tertiary-fixed-variant": "#7c2d11",
+                    "surface-container-high": "#e6e8ea",
+                    "primary": "#006b5f",
+                    "tertiary": "#9b4426",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "primary-fixed": "#71f8e4",
+                    "on-error": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#f38764",
+                    "surface-container": "#eceef0",
+                    "dark-bg": "#0F172A",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-tint": "#006b5f",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#4fdbc8",
+                    "on-surface-variant": "#3c4947",
+                    "surface-bright": "#f7f9fb",
+                    "accent-glow": "rgba(20, 184, 166, 0.1)",
+                    "surface-variant": "#e0e3e5",
+                    "primary-fixed-dim": "#4fdbc8",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#d5e3fd",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-container": "#57657b",
+                    "on-primary-fixed-variant": "#005048",
+                    "on-background": "#191c1e",
+                    "outline": "#6c7a77",
+                    "surface": "#FFFFFF",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#515f74",
+                    "tertiary-fixed-dim": "#ffb59e",
+                    "surface-dim": "#d8dadc",
+                    "outline-variant": "#bbcac6",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "on-tertiary-container": "#6c2106"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "300"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-mobile": ["36px", {"lineHeight": "44px", "fontWeight": "300"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom animation for the empathetic breathing pulse */
+        @keyframes pulse-breathe {
+            0% { transform: scale(0.4); opacity: 0.9; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.4); opacity: 0.9; }
+        }
+        .animate-breathe {
+            animation: pulse-breathe 8s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background min-h-[884px] flex flex-col font-body-md text-on-background selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
+<!-- Contextual Header (Task-Focused: Suppressing global TopAppBar) -->
+<header class="flex items-center justify-between px-container-margin h-16 w-full max-w-[480px] mx-auto z-10">
+<button aria-label="Cerrar sesión" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-variant/50 transition-colors active:scale-95 text-on-surface">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Dormir</h1>
+<div class="w-12 h-12"></div> <!-- Spacer for perfect centering -->
+</header>
+<!-- Main Breathing Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center w-full max-w-[480px] mx-auto px-container-margin relative">
+<!-- The Pulse - Central Breathing Guide -->
+<div class="relative w-[320px] h-[320px] flex items-center justify-center mb-16">
+<!-- Ambient Limit Shadow (10% opacity ring marking max boundary) -->
+<div class="absolute inset-0 rounded-full border-[2px] border-primary-container/10 shadow-[0_0_60px_rgba(20,184,166,0.05)] pointer-events-none"></div>
+<!-- Expanding/Contracting Teal Circle -->
+<div class="absolute inset-0 bg-primary-container rounded-full flex items-center justify-center animate-breathe shadow-lg shadow-primary-container/20">
+<span class="font-display-mobile text-display-mobile text-on-primary-container select-none">Inhala</span>
+</div>
+</div>
+<!-- Phase Map Indicator -->
+<div class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg mt-12">
+<!-- Active Phase -->
+<div aria-label="Fase actual: 4 segundos" class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary font-bold shadow-sm">
+                4
+            </div>
+<!-- Inactive Phases -->
+<span class="opacity-30 font-light">-</span>
+<span class="opacity-30 font-light">7</span>
+<span class="opacity-30 font-light">-</span>
+<span class="opacity-30 font-light">8</span>
+</div>
+</main>
+<!-- Footer Controls -->
+<footer class="flex flex-col items-center pb-12 w-full max-w-[480px] mx-auto z-10 gap-12">
+<!-- Timer -->
+<div aria-label="Tiempo restante: 3 minutos y 45 segundos" class="font-display-mobile text-display-mobile text-on-surface tabular-nums tracking-wide opacity-90">
+            03:45
+        </div>
+<!-- Secondary Ghost Button -->
+<button class="bg-surface-variant text-on-surface-variant px-10 py-4 rounded-full font-label-lg text-label-lg hover:bg-surface-dim transition-transform duration-200 active:scale-95 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+            Finalizar
+        </button>
+</footer>
+</body></html>

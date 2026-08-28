@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selector de Tiempo - Tone Breath</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#2d3133",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#00201c",
+                      "on-primary-container": "#00423b",
+                      "primary-container": "#14b8a6",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "secondary-fixed": "#d5e3fd",
+                      "on-tertiary-fixed": "#3a0b00",
+                      "tertiary-fixed": "#ffdbd0",
+                      "on-surface": "#191c1e",
+                      "dark-surface": "#1E293B",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-tertiary-fixed-variant": "#7c2d11",
+                      "surface-container-high": "#e6e8ea",
+                      "primary": "#006b5f",
+                      "tertiary": "#9b4426",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "primary-fixed": "#71f8e4",
+                      "on-error": "#ffffff",
+                      "background": "#f7f9fb",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#f38764",
+                      "surface-container": "#eceef0",
+                      "dark-bg": "#0F172A",
+                      "surface-container-low": "#f2f4f6",
+                      "surface-tint": "#006b5f",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "inverse-primary": "#4fdbc8",
+                      "on-surface-variant": "#3c4947",
+                      "surface-bright": "#f7f9fb",
+                      "accent-glow": "rgba(20, 184, 166, 0.1)",
+                      "surface-variant": "#e0e3e5",
+                      "primary-fixed-dim": "#4fdbc8",
+                      "on-error-container": "#93000a",
+                      "secondary-container": "#d5e3fd",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#57657b",
+                      "on-primary-fixed-variant": "#005048",
+                      "on-background": "#191c1e",
+                      "outline": "#6c7a77",
+                      "surface": "#FFFFFF",
+                      "inverse-on-surface": "#eff1f3",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary": "#515f74",
+                      "tertiary-fixed-dim": "#ffb59e",
+                      "surface-dim": "#d8dadc",
+                      "outline-variant": "#bbcac6",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "on-tertiary-container": "#6c2106"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-margin": "24px",
+                      "gutter": "16px",
+                      "base": "8px",
+                      "section-gap": "40px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "display": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "300"}],
+                      "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-mobile": ["36px", {"lineHeight": "44px", "fontWeight": "300"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Custom styles to refine the range input appearance beyond Tailwind's base */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #14b8a6; /* primary-container */
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            margin-top: -10px;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(0.9);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e0e3e5; /* surface-variant */
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- 
+        Task-focused screen (Time Selection before an exercise).
+        According to rules, Navigation Shells (TopAppBar with nav, BottomNavBar) are suppressed.
+        We provide a contextual header with a 'close' action.
+    -->
+<div class="min-h-screen flex flex-col w-full max-w-[480px] mx-auto relative bg-surface shadow-[0_0_40px_rgba(0,0,0,0.03)] sm:shadow-[0_0_60px_rgba(0,0,0,0.05)] overflow-hidden">
+<!-- Ambient background glow (The Pulse motif) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent-glow rounded-full blur-3xl opacity-50 pointer-events-none transition-transform duration-1000 ease-in-out" id="ambient-glow"></div>
+<!-- Header -->
+<header class="flex items-center justify-between px-container-margin h-16 w-full z-10">
+<button class="p-2 -ml-2 rounded-full hover:bg-surface-variant transition-colors text-on-surface-variant active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase">Ajustes</span>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center px-container-margin z-10 w-full relative">
+<h1 class="font-headline-md text-headline-md text-on-surface text-center mb-section-gap max-w-[280px]">
+                ¿Cuánto tiempo quieres dedicarte?
+            </h1>
+<!-- Time Selector Widget -->
+<div class="flex flex-col items-center w-full mb-12">
+<!-- Display -->
+<div class="relative flex items-center justify-center w-64 h-64 mb-12 rounded-full border border-surface-variant bg-surface-container-lowest shadow-[0_4px_30px_rgba(0,0,0,0.02)]">
+<!-- Subtle limit ring inside -->
+<div class="absolute inset-4 rounded-full border-[1px] border-primary-container/10"></div>
+<div class="text-center">
+<div class="font-display text-display text-primary tracking-tight" id="time-display" style="font-feature-settings: 'tnum';">
+                            05:00
+                        </div>
+<div class="font-label-sm text-label-sm text-outline mt-1">minutos</div>
+</div>
+</div>
+<!-- Slider -->
+<div class="w-full max-w-[320px] px-2 relative">
+<!-- 1 to 60 steps, representing 30s intervals (0.5m to 30m) -->
+<input class="w-full appearance-none bg-transparent relative z-10 focus:outline-none" id="time-slider" max="60" min="1" type="range" value="10"/>
+<!-- Dynamic fill track script handled below, fallback styling in head -->
+<div class="flex justify-between w-full mt-4 font-label-sm text-label-sm text-outline">
+<span>1 min</span>
+<span>30 min</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<div class="p-container-margin pb-8 w-full z-10 bg-gradient-to-t from-surface via-surface to-transparent">
+<button class="w-full h-16 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(20,184,166,0.2)]">
+                Empezar
+                <span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('time-slider');
+            const display = document.getElementById('time-display');
+            const glow = document.getElementById('ambient-glow');
+
+            function updateTimeDisplay(value) {
+                // Value is 1-60 steps. Each step is 30 seconds.
+                const totalSeconds = value * 30;
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+
+                const formattedMin = minutes.toString().padStart(2, '0');
+                const formattedSec = seconds.toString().padStart(2, '0');
+                
+                display.textContent = `${formattedMin}:${formattedSec}`;
+
+                // Pulse effect on slider interaction
+                const scale = 1 + (value / 60) * 0.2;
+                glow.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            }
+
+            slider.addEventListener('input', (e) => {
+                updateTimeDisplay(e.target.value);
+            });
+
+            // Initialize
+            updateTimeDisplay(slider.value);
+        });
+    </script>
+</body></html>

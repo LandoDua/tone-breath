@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f8fafc;
+  --bg-outer: #eef2f6;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --text: #334155;
+  --text-muted: #64748b;
+  --accent: #14b8a6;
+  --accent-strong: #0d9488;
+  --ring-limit: rgba(20, 184, 166, 0.1);
+  --shadow-soft: 0 10px 40px -10px rgba(108, 122, 119, 0.15);
+  --glow: 0 0 60px rgba(20, 184, 166, 0.35);
+}
+
+.dark {
+  --bg: #0f172a;
+  --bg-outer: #0b1120;
+  --surface: #1e293b;
+  --surface-2: #172033;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #2dd4bf;
+  --accent-strong: #14b8a6;
+  --ring-limit: rgba(45, 212, 191, 0.2);
+  --shadow-soft: 0 10px 40px -10px rgba(108, 122, 119, 0.15);
+  --glow: 0 0 70px rgba(45, 212, 191, 0.4);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-outer: var(--bg-outer);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-ring-limit: var(--ring-limit);
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-glow: var(--glow);
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --radius-card: 2rem;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Custom range slider (time selector) */
+.tb-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+.tb-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--surface-2);
+}
+.tb-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  width: 28px;
+  margin-top: -10px;
+  border-radius: 9999px;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 4px solid var(--surface);
+}
+.tb-range::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--surface-2);
+}
+.tb-range::-moz-range-thumb {
+  height: 28px;
+  width: 28px;
+  border: 4px solid var(--surface);
+  border-radius: 9999px;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
