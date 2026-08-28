@@ -44,6 +44,29 @@ npm run preview    # sirve el build de producción en http://localhost:4173
 
 Para probar en un teléfono en la misma red WiFi, entra a `http://<tu-ip>:5173` (el servidor dev y preview escuchan en todas las interfaces).
 
+## Despliegue en homelab (Docker)
+
+El proyecto incluye `Dockerfile`, `nginx.conf`, `docker-compose.yml`, `Makefile` y `.dockerignore`. El build es multi-stage: compila con Node 22 + Vite y sirve el `dist/` con nginx (imagen final ~25 MB).
+
+```bash
+make build   # docker compose build
+make up      # docker compose up -d
+# App en http://<homelab-ip>:8080
+```
+
+Otros targets: `make logs`, `make restart`, `make down`. El contenedor reinicia solo y trae healthcheck.
+
+### Nota sobre HTTPS y la PWA
+
+Los Service Workers (instalación/offline) **solo funcionan en origen seguro (HTTPS)**, no por HTTP simple. Sobre la red LAN funcionará como web app, pero para que la PWA sea instalable en el móvil de un amigo necesitas exponerla con TLS delante del contenedor. Si usas Tailscale Serve:
+
+```bash
+tailscale serve --bg --https=443 http://homelab-ip:8080
+# -> https://<tu-tailnet>.ts.net
+```
+
+El contenedor solo expone HTTP interno en `:80`; el proxy (Tailscale, Caddy con dominio, Cloudflare Tunnel…) termina el TLS, así que el service worker registra sin problema.
+
 ## Estructura
 
 ```
@@ -58,6 +81,10 @@ app/
 docs/
   audio.md               # documentación del motor de sonido (tonos y reverb)
 context/                 # diseño de referencia y PDF de diseño (Stitch)
+Dockerfile               # build multi-stage (Node 22 + nginx)
+nginx.conf               # servidor estático con cabeceras PWA
+docker-compose.yml       # servicio para homelab (puerto 8080)
+Makefile                 # make build/up/down/logs…
 ```
 
 ## Documentación de audio

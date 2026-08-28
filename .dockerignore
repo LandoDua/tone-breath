@@ -1,0 +1,11 @@
+.git
+.gitignore
+*.md
+app/node_modules
+app/dist
+app/dev-dist
+*.tgz
+opencode.json
+agents/
+context/
+docs/
