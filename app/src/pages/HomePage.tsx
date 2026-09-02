@@ -1,4 +1,4 @@
-import { Leaf, Moon, Square, Waves } from "lucide-react"
+import { AudioLines, Leaf, Moon, Square, Waves } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { ScreenHeader } from "../components/ui/ScreenHeader"
 import { ModeCard } from "../components/home/ModeCard"
@@ -14,9 +14,10 @@ const routineList = [
 interface HomePageProps {
   onSelectRoutine: (id: string) => void
   onSos: () => void
+  onDemo: () => void
 }
 
-export function HomePage({ onSelectRoutine, onSos }: HomePageProps) {
+export function HomePage({ onSelectRoutine, onSos, onDemo }: HomePageProps) {
   const { theme, toggle } = useTheme()
 
   return (
@@ -63,6 +64,15 @@ export function HomePage({ onSelectRoutine, onSos }: HomePageProps) {
         <section>
           <SosButton onClick={onSos} />
         </section>
+
+        <button
+          type="button"
+          onClick={onDemo}
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-outline/20 py-3 text-sm font-medium text-text-muted transition-colors active:bg-surface-2"
+        >
+          <AudioLines className="h-4 w-4" strokeWidth={2} />
+          Probar audio por modo
+        </button>
 
         <BottomNav
           active="home"
