@@ -7,6 +7,7 @@ import { HomePage } from "./pages/HomePage"
 import { TimeSelectorPage } from "./pages/TimeSelectorPage"
 import { ActiveSessionPage } from "./pages/ActiveSessionPage"
 import { SessionSummaryPage } from "./pages/SessionSummaryPage"
+import { AmbientDemoPage } from "./pages/AmbientDemoPage"
 import { routines, routineList } from "./lib/routines"
 import { useBreathingSession } from "./hooks/useBreathingSession"
 
@@ -17,9 +18,11 @@ export default function App() {
   const [duration, setDuration] = useState(5)
 
   const selectedRoutine = routineList.find((r) => r.id === routineId) ?? null
-  const session = useBreathingSession(selectedRoutine ?? undefined, duration)
-
   const goHome = () => navigate("/")
+  const goDemo = () => navigate("/demo")
+  const goToSummary = () => navigate("/summary")
+  const session = useBreathingSession(selectedRoutine ?? undefined, duration, goToSummary)
+
   const goSelectTime = (id: string) => {
     setRoutineId(id)
     navigate("/select-time")
@@ -52,7 +55,7 @@ export default function App() {
               path="/"
               element={
                 <PageTransition>
-                  <HomePage onSelectRoutine={goSelectTime} onSos={startSos} />
+                  <HomePage onSelectRoutine={goSelectTime} onSos={startSos} onDemo={goDemo} />
                 </PageTransition>
               }
             />
@@ -108,6 +111,14 @@ export default function App() {
                 ) : (
                   <Navigate to="/" replace />
                 )
+              }
+            />
+            <Route
+              path="/demo"
+              element={
+                <PageTransition>
+                  <AmbientDemoPage />
+                </PageTransition>
               }
             />
           </Routes>

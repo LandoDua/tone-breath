@@ -5,7 +5,6 @@ import {
   getElapsed,
   initAudio,
   pauseTransport,
-  playPhaseCue,
   resumeTransport,
   startMetronome,
   stopMetronome,
@@ -26,7 +25,11 @@ export interface BreathingSession {
   finish: () => void
 }
 
-export function useBreathingSession(routine?: Routine, durationMinutes: number = 5): BreathingSession {
+export function useBreathingSession(
+  routine?: Routine,
+  durationMinutes: number = 5,
+  onComplete?: () => void,
+): BreathingSession {
   const r0 = routine ?? defaultRoutine
   const total0 = Math.max(1, Math.round(durationMinutes * 60))
   const scale = useMotionValue(MIN_SCALE)
@@ -40,6 +43,11 @@ export function useBreathingSession(routine?: Routine, durationMinutes: number =
   const totalRef = useRef(total0)
   const statusRef = useRef<SessionStatus>('idle')
   const clockRef = useRef<BreathingClockHandle | null>(null)
+  const onCompleteRef = useRef(onComplete)
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   useEffect(() => {
     routineRef.current = routine ?? defaultRoutine
@@ -63,17 +71,17 @@ export function useBreathingSession(routine?: Routine, durationMinutes: number =
 
   const startClock = useCallback(() => {
     stopClock()
-    clockRef.current = createBreathingClock(
-      routineRef.current,
-      scale,
-      (phase) => {
-        setPhase(phase)
-        playPhaseCue(phase.name)
-      },
-      (elapsed) => {
+      clockRef.current = createBreathingClock(
+        routineRef.current,
+        scale,
+        (phase) => {
+          setPhase(phase)
+        },
+        (elapsed) => {
         setSecondsRemaining(Math.max(0, totalRef.current - Math.floor(elapsed)))
         if (elapsed >= totalRef.current && statusRef.current === 'running') {
           finish()
+          onCompleteRef.current?.()
         }
       },
     )
