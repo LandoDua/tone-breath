@@ -18,10 +18,11 @@ export default function App() {
   const [duration, setDuration] = useState(5)
 
   const selectedRoutine = routineList.find((r) => r.id === routineId) ?? null
-  const session = useBreathingSession(selectedRoutine ?? undefined, duration)
-
   const goHome = () => navigate("/")
   const goDemo = () => navigate("/demo")
+  const goToSummary = () => navigate("/summary")
+  const session = useBreathingSession(selectedRoutine ?? undefined, duration, goToSummary)
+
   const goSelectTime = (id: string) => {
     setRoutineId(id)
     navigate("/select-time")
