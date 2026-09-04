@@ -50,21 +50,23 @@ Cualquier fase desconocida cae a `C4` por defecto (`?? 'C4'`).
 
 | Parámetro             | Valor actual | Dónde                |
 | ---------------------- | ------------ | -------------------- |
-| Synth volume          | -4 dB        | `initAudio`          |
+| Synth volume          | 0 dB         | `initAudio` (antes -4) |
 | Reverb metrónomo      | decay 4, wet 0.55 | `initAudio`     |
 | Reverb pad            | decay 6, wet 0.7 | `ambientPad`    |
 | Velocity 1er pulso fase | 0.7          | `startMetronome`     |
 | Velocity resto         | 0.15         | `startMetronome`     |
-| Volumen pad sesión     | 0.4          | `startMetronome`     |
+| Volumen pad sesión     | 0.4          | `startMetronome` / persistido |
+| **Volumen metronome**  | **0.63**     | **`setMetronomeVolume` / persistido** |
 
-> Notas de uso:
->
-> - `pauseTransport()` / `resumeTransport()` pausan y reanudan el `Transport` (detienen/reanudan también el pad).
-> - `stopMetronome()` resetea `Transport.seconds` a 0 y detiene el pad.
-> - `disposeAudio()` libera synth/reverb/pad y vuelve a `initialized = false`.
-> - Demo: `startAmbientDemo(profile)`, `setAmbientProfile(profile)`, `setAmbientVolume(value)` en `/demo`.
+## Configuración guardada
+
+Los niveles de volumen se guardan en `localStorage` bajo la clave `tone-breath:audio-levels` con dos valores normalizados de 0 a 1:
+
+- **metronome** — Controla el volumen de los pulsos (por defecto `0.63`, equivalente al anterior `-4 dB`). Permite subir el volumen si el metrónomo resulta muy grave o bajo para el usuario.
+- **ambient** — Controla el volumen del colchón de fondo (por defecto `0.4`). Los ajustes se mantienen entre sesiones y están disponibles en la página de demo.
+
+Los ajustes se aplican al instante al mover los deslizadores en la pantalla de sesión (botón de icono de volumen en la barra inferior) o en la página de demo.
 
 ## Pendiente (próximo paso)
 
-- **Barra de volumen maestro** en la UI (aún no implementada). Probablemente un gancho `useMasterVolume` que ajuste el volumen del synth, y opcionalmente el `wet` de la reverb desde pantalla.
-- Afinar niveles de reverb, tonos y perfiles del pad según feedback auditivo.
+- A fin de afinar aún más los niveles según feedback auditivo continuado.
