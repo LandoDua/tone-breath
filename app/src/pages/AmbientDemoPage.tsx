@@ -8,12 +8,15 @@ import {
 } from "../lib/ambientPad"
 import {
   getAmbientProfile,
+  getAmbientVolume,
+  getMetronomeVolume,
   initAudio,
   setAmbientProfile,
   setAmbientVolume,
   startAmbientDemo,
   stopAmbient,
 } from "../lib/audioEngine"
+import { saveAudioLevels } from "../lib/audioSettings"
 
 const ICON_BY_NAME: Record<string, typeof Moon> = {
   dormir: Moon,
@@ -31,7 +34,7 @@ export function AmbientDemoPage() {
   const navigate = useNavigate()
   const [profile, setProfile] = useState<AmbientProfile>(getAmbientProfile())
   const [playing, setPlaying] = useState(false)
-  const [volume, setVolume] = useState(0.6)
+  const [volume, setVolume] = useState(getAmbientVolume())
 
   useEffect(() => {
     void initAudio()
@@ -62,6 +65,7 @@ export function AmbientDemoPage() {
   const onVolume = (v: number) => {
     setVolume(v)
     setAmbientVolume(v)
+    saveAudioLevels({ metronome: getMetronomeVolume(), ambient: v })
   }
 
   const Icon = ICON_BY_NAME[profile.name] ?? Moon

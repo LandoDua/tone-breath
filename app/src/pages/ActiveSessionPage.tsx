@@ -1,8 +1,10 @@
 import type { MotionValue } from "framer-motion"
-import { Pause, Play, X } from "lucide-react"
+import { useState } from "react"
+import { Pause, Play, Volume2, X } from "lucide-react"
 import { ScreenHeader } from "../components/ui/ScreenHeader"
 import { BreathingCircle } from "../components/breathing/BreathingCircle"
 import { PhaseIndicator } from "../components/breathing/PhaseIndicator"
+import { VolumeControls } from "../components/session/VolumeControls"
 import { formatTime } from "../lib/format"
 import type { Routine } from "../lib/routines"
 
@@ -29,6 +31,8 @@ export function ActiveSessionPage({
   onFinish,
   onExit,
 }: ActiveSessionPageProps) {
+  const [volumeOpen, setVolumeOpen] = useState(false)
+
   return (
     <div className="flex min-h-[max(884px,100dvh)] flex-col">
       <ScreenHeader
@@ -62,6 +66,14 @@ export function ActiveSessionPage({
         <div className="flex items-center gap-6">
           <button
             type="button"
+            onClick={() => setVolumeOpen(true)}
+            aria-label="Volumen"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 text-text transition-transform active:scale-95"
+          >
+            <Volume2 className="h-6 w-6" strokeWidth={2} />
+          </button>
+          <button
+            type="button"
             onClick={onTogglePause}
             aria-label={isPaused ? "Reanudar" : "Pausar"}
             className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 text-text transition-transform active:scale-95"
@@ -81,6 +93,8 @@ export function ActiveSessionPage({
           </button>
         </div>
       </footer>
+
+      <VolumeControls open={volumeOpen} onClose={() => setVolumeOpen(false)} />
     </div>
   )
 }
