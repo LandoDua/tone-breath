@@ -10,7 +10,7 @@ export interface Routine {
   id: string
   name: string
   description: string
-  icon: 'moon' | 'spa' | 'pulse'
+  icon: 'moon' | 'waves' | 'square'
   defaultDuration: number
   phases: RoutinePhase[]
 }
@@ -32,7 +32,7 @@ export const routines: Record<string, Routine> = {
     id: 'coherent',
     name: 'Relajar',
     description: 'Paz en el presente',
-    icon: 'spa',
+    icon: 'waves',
     defaultDuration: 5,
     phases: [
       { name: 'inhale', duration: 5.5, label: 'Inhala' },
@@ -43,7 +43,7 @@ export const routines: Record<string, Routine> = {
     id: 'square',
     name: 'Estrés',
     description: 'Alivio inmediato',
-    icon: 'pulse',
+    icon: 'square',
     defaultDuration: 4,
     phases: [
       { name: 'inhale', duration: 4, label: 'Inhala' },

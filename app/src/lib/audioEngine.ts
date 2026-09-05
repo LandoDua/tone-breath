@@ -139,6 +139,26 @@ export function getMetronomeVolume(): number {
   return metronomeLevel
 }
 
+export function playCompletionChord(): void {
+  if (!reverb) return
+  const chordGain = new Tone.Gain(metronomeLevel)
+  const chordSynth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.8, decay: 0.2, sustain: 0.8, release: 2.5 },
+    volume: -12,
+  })
+  chordSynth.connect(chordGain)
+  chordGain.connect(reverb)
+  chordSynth.triggerAttackRelease(['C4', 'E4', 'G4'], '2n')
+  const now = Tone.now()
+  chordGain.gain.setValueAtTime(metronomeLevel, now + 1.5)
+  chordGain.gain.linearRampToValueAtTime(0, now + 3.5)
+  setTimeout(() => {
+    chordSynth.dispose()
+    chordGain.dispose()
+  }, 5000)
+}
+
 export function disposeAudio(): void {
   stopMetronome()
   synth?.dispose()

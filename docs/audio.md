@@ -46,6 +46,16 @@ Cualquier fase desconocida cae a `C4` por defecto (`?? 'C4'`).
 - **Glide generativo**: cada 8 s selecciona una nota de la escala del modo activo y la toca largamente, evitando la monotonía.
 - Suena durante toda la sesión a volumen menor que el metrónomo (`0.4`).
 
+### 3. Acorde de finalización — `playCompletionChord()`
+
+- Se ejecuta una vez al finalizar la sesión (al agotar el tiempo o pulsar "Finalizar").
+- **PolySynth temporal** con oscilador sine, ataque lento (0.8s), sustain alto (0.8), release largo (2.5s).
+- Toca **C4 + E4 + G4** (acorde de Do mayor) durante `'2n'` (2 segundos).
+- Conectado a la misma reverb que el metrónomo para mantener coherencia espacial.
+- Volumen controlado por `metronomeLevel` (misma ganancia que los pulsos).
+- **Fade out lineal**: la ganancia baja de `metronomeLevel` a 0 entre el segundo 1.5 y 3.5.
+- Se dispone automáticamente a los 5 segundos para liberar recursos.
+
 ## Niveles y ajustes
 
 | Parámetro             | Valor actual | Dónde                |
@@ -57,6 +67,7 @@ Cualquier fase desconocida cae a `C4` por defecto (`?? 'C4'`).
 | Velocity resto         | 0.15         | `startMetronome`     |
 | Volumen pad sesión     | 0.4          | `startMetronome` / persistido |
 | **Volumen metronome**  | **0.63**     | **`setMetronomeVolume` / persistido** |
+| Volumen acorde final   | `metronomeLevel` | `playCompletionChord` (mismo que metrónomo) |
 
 ## Configuración guardada
 
