@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { AnimatePresence, MotionConfig } from "framer-motion"
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { AppShell } from "./components/layout/AppShell"
@@ -11,6 +11,8 @@ import { AmbientDemoPage } from "./pages/AmbientDemoPage"
 import { routines, routineList } from "./lib/routines"
 import { useBreathingSession } from "./hooks/useBreathingSession"
 
+const COMPLETION_ANIMATION_MS = 1800
+
 export default function App() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -20,8 +22,18 @@ export default function App() {
   const selectedRoutine = routineList.find((r) => r.id === routineId) ?? null
   const goHome = () => navigate("/")
   const goDemo = () => navigate("/demo")
-  const goToSummary = () => navigate("/summary")
+  const goToSummary = useCallback(() => navigate("/summary"), [navigate])
   const session = useBreathingSession(selectedRoutine ?? undefined, duration, goToSummary)
+
+  useEffect(() => {
+    if (!session.isCompleting) return
+    const timer = setTimeout(() => {
+      goToSummary()
+      session.resetCompleting()
+    }, COMPLETION_ANIMATION_MS)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.isCompleting, goToSummary, session.resetCompleting])
 
   const goSelectTime = (id: string) => {
     setRoutineId(id)
@@ -33,10 +45,8 @@ export default function App() {
   }
   const finishSession = () => {
     session.finish()
-    navigate("/summary")
   }
   const exitSession = () => {
-    session.finish()
     navigate("/")
   }
   const startSos = () => {
@@ -87,6 +97,7 @@ export default function App() {
                       activePhaseIndex={selectedRoutine.phases.indexOf(session.phase)}
                       remaining={session.secondsRemaining}
                       isPaused={session.status === "paused"}
+                      isCompleting={session.isCompleting}
                       onTogglePause={session.status === "paused" ? session.resume : session.pause}
                       onFinish={finishSession}
                       onExit={exitSession}
@@ -105,6 +116,7 @@ export default function App() {
                     <SessionSummaryPage
                       routine={selectedRoutine}
                       durationMinutes={duration}
+                      elapsedSeconds={session.elapsedAtFinish}
                       onHome={goHome}
                     />
                   </PageTransition>

@@ -5,6 +5,7 @@ import {
   getElapsed,
   initAudio,
   pauseTransport,
+  playCompletionChord,
   resumeTransport,
   startMetronome,
   stopMetronome,
@@ -19,10 +20,46 @@ export interface BreathingSession {
   phase: RoutinePhase
   secondsRemaining: number
   completion: number
+  isCompleting: boolean
+  elapsedAtFinish: number
   start: (override?: { routine?: Routine; durationMinutes?: number }) => void
   pause: () => void
   resume: () => void
   finish: () => void
+  resetCompleting: () => void
+}
+
+function useScreenWakeLock(active: boolean) {
+  const lockRef = useRef<WakeLockSentinel | null>(null)
+
+  useEffect(() => {
+    if (!active || !('wakeLock' in navigator)) return
+    let cancelled = false
+
+    const request = async () => {
+      try {
+        const sentinel = await navigator.wakeLock.request('screen')
+        if (!cancelled) {
+          lockRef.current = sentinel
+          sentinel.addEventListener('release', () => {
+            lockRef.current = null
+          })
+        } else {
+          sentinel.release()
+        }
+      } catch {
+        // Wake lock not supported or denied — graceful fallback
+      }
+    }
+
+    void request()
+
+    return () => {
+      cancelled = true
+      lockRef.current?.release()
+      lockRef.current = null
+    }
+  }, [active])
 }
 
 export function useBreathingSession(
@@ -37,6 +74,8 @@ export function useBreathingSession(
   const [phase, setPhase] = useState<RoutinePhase>(r0.phases[0])
   const [secondsRemaining, setSecondsRemaining] = useState(total0)
   const [completion, setCompletion] = useState(0)
+  const [isCompleting, setIsCompleting] = useState(false)
+  const [elapsedAtFinish, setElapsedAtFinish] = useState(0)
 
   const routineRef = useRef(r0)
   const durationRef = useRef(durationMinutes)
@@ -44,6 +83,8 @@ export function useBreathingSession(
   const statusRef = useRef<SessionStatus>('idle')
   const clockRef = useRef<BreathingClockHandle | null>(null)
   const onCompleteRef = useRef(onComplete)
+
+  useScreenWakeLock(status === 'running')
 
   useEffect(() => {
     onCompleteRef.current = onComplete
@@ -63,25 +104,26 @@ export function useBreathingSession(
 
   const finish = useCallback(() => {
     const elapsed = getElapsed()
+    setElapsedAtFinish(elapsed)
     setCompletion(Math.min(1, elapsed / totalRef.current))
     stopMetronome()
     stopClock()
-    setStatus('finished')
+    playCompletionChord()
+    setIsCompleting(true)
   }, [stopClock])
 
   const startClock = useCallback(() => {
     stopClock()
-      clockRef.current = createBreathingClock(
-        routineRef.current,
-        scale,
-        (phase) => {
-          setPhase(phase)
-        },
-        (elapsed) => {
+    clockRef.current = createBreathingClock(
+      routineRef.current,
+      scale,
+      (phase) => {
+        setPhase(phase)
+      },
+      (elapsed) => {
         setSecondsRemaining(Math.max(0, totalRef.current - Math.floor(elapsed)))
         if (elapsed >= totalRef.current && statusRef.current === 'running') {
           finish()
-          onCompleteRef.current?.()
         }
       },
     )
@@ -117,6 +159,10 @@ export function useBreathingSession(
     void start()
   }, [start])
 
+  const resetCompleting = useCallback(() => {
+    setIsCompleting(false)
+  }, [])
+
   useEffect(() => {
     return () => {
       stopMetronome()
@@ -124,5 +170,5 @@ export function useBreathingSession(
     }
   }, [stopClock])
 
-  return { scale, status, phase, secondsRemaining, completion, start, pause, resume, finish }
+  return { scale, status, phase, secondsRemaining, completion, isCompleting, elapsedAtFinish, start, pause, resume, finish, resetCompleting }
 }

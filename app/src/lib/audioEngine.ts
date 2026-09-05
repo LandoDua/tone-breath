@@ -8,12 +8,18 @@ import {
   type AmbientPadHandle,
   type AmbientProfile,
 } from './ambientPad'
+import { loadAudioLevels } from './audioSettings'
 
 let synth: Tone.Synth | null = null
+let metronomeGain: Tone.Gain | null = null
 let reverb: Tone.Reverb | null = null
 let ambient: AmbientPadHandle | null = null
 let transportStarted = false
 let initialized = false
+
+const levels = loadAudioLevels()
+let metronomeLevel = levels.metronome
+let ambientLevel = levels.ambient
 
 const NOTE_BY_PHASE: Record<string, string> = {
   inhale: 'C4',
@@ -37,8 +43,10 @@ export async function initAudio(): Promise<void> {
   synth = new Tone.Synth({
     oscillator: { type: 'sine' },
     envelope: { attack: 0.01, decay: 0.3, sustain: 0.15, release: 1.6 },
-    volume: -4,
-  }).connect(reverb)
+    volume: 0,
+  })
+  metronomeGain = new Tone.Gain(metronomeLevel)
+  synth.chain(metronomeGain, reverb)
   ambient = createAmbientPad()
   Tone.Transport.bpm.value = 60
   initialized = true
@@ -67,7 +75,7 @@ export function startMetronome(routine: Routine): void {
     lastPhaseIndex = phaseInfo.phaseIndex
     synth!.triggerAttackRelease(note, '8n', time, velocity)
   }, '4n')
-  ambient.setVolume(0.4)
+  ambient.setVolume(ambientLevel)
   void ambient.setProfile(profileForRoutine(routine))
   ensureTransportRunning()
 }
@@ -76,7 +84,7 @@ export function startAmbientDemo(profile: AmbientProfile): void {
   if (!ambient) return
   Tone.Transport.cancel(0)
   void ambient.setProfile(profile)
-  ambient.setVolume(0.6)
+  ambient.setVolume(ambientLevel)
   ensureTransportRunning()
 }
 
@@ -114,15 +122,51 @@ export function getAmbientProfile(): AmbientProfile {
 }
 
 export function setAmbientVolume(value: number): void {
+  ambientLevel = value
   ambient?.setVolume(value)
+}
+
+export function getAmbientVolume(): number {
+  return ambientLevel
+}
+
+export function setMetronomeVolume(value: number): void {
+  metronomeLevel = value
+  metronomeGain?.gain.rampTo(value, 0.05)
+}
+
+export function getMetronomeVolume(): number {
+  return metronomeLevel
+}
+
+export function playCompletionChord(): void {
+  if (!reverb) return
+  const chordGain = new Tone.Gain(metronomeLevel)
+  const chordSynth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.8, decay: 0.2, sustain: 0.8, release: 2.5 },
+    volume: -12,
+  })
+  chordSynth.connect(chordGain)
+  chordGain.connect(reverb)
+  chordSynth.triggerAttackRelease(['C4', 'E4', 'G4'], '2n')
+  const now = Tone.now()
+  chordGain.gain.setValueAtTime(metronomeLevel, now + 1.5)
+  chordGain.gain.linearRampToValueAtTime(0, now + 3.5)
+  setTimeout(() => {
+    chordSynth.dispose()
+    chordGain.dispose()
+  }, 5000)
 }
 
 export function disposeAudio(): void {
   stopMetronome()
   synth?.dispose()
+  metronomeGain?.dispose()
   reverb?.dispose()
   ambient?.dispose()
   synth = null
+  metronomeGain = null
   reverb = null
   ambient = null
   initialized = false
