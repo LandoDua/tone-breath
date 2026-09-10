@@ -8,12 +8,15 @@ const AUTO_SKIP_SECONDS = 5
 
 interface EmotionScreenProps {
   type: "before" | "after"
+  initialDimensions?: EmotionDimensions
   onConfirm: (dimensions: EmotionDimensions) => void
   onSkip: () => void
 }
 
-export function EmotionScreen({ type, onConfirm, onSkip }: EmotionScreenProps) {
-  const [dimensions, setDimensions] = useState<EmotionDimensions>(EMOTION_DIMENSIONS_DEFAULT)
+export function EmotionScreen({ type, initialDimensions, onConfirm, onSkip }: EmotionScreenProps) {
+  const [dimensions, setDimensions] = useState<EmotionDimensions>(
+    initialDimensions ?? EMOTION_DIMENSIONS_DEFAULT,
+  )
   const [remaining, setRemaining] = useState(AUTO_SKIP_SECONDS)
   const [userInteracted, setUserInteracted] = useState(false)
   const pausedRef = useRef(false)
@@ -36,7 +39,6 @@ export function EmotionScreen({ type, onConfirm, onSkip }: EmotionScreenProps) {
       if (!pausedRef.current) {
         pausedRef.current = true
         setUserInteracted(true)
-        setRemaining(0)
       }
     },
     [],

@@ -3,7 +3,7 @@ export interface EmotionDimensions {
   ansiedad: number
   energia: number
   tristeza: number
-  enfoque: number
+  estres: number
   apertura: number
 }
 
@@ -11,29 +11,33 @@ export type DimensionKey = keyof EmotionDimensions
 
 export const DIMENSION_KEYS: DimensionKey[] = [
   "calma",
-  "ansiedad",
   "energia",
-  "tristeza",
-  "enfoque",
   "apertura",
+  "estres",
+  "tristeza",
+  "ansiedad",
 ]
 
-export const DIMENSION_LABELS = ["Calma", "Ansiedad", "Energía", "Tristeza", "Enfoque", "Apertura"]
+export const DIMENSION_LABELS = ["Calma", "Energía", "Apertura", "Estrés", "Tristeza", "Ansiedad"]
 
 export const DIMENSION_COLORS: Record<DimensionKey, string> = {
   calma: "#14b8a6",
   ansiedad: "#f43f5e",
   energia: "#f59e0b",
   tristeza: "#64748b",
-  enfoque: "#3b82f6",
+  estres: "#ef4444",
   apertura: "#a855f7",
 }
 
+export const DIMENSION_STATE_LABELS = ["No percibido", "Ligero", "Notable"]
+
 export const EMOTION_DIMENSIONS_DEFAULT: EmotionDimensions = {
-  calma: 5,
-  ansiedad: 5,
-  energia: 5,
-  tristeza: 5,
-  enfoque: 5,
-  apertura: 5,
+  calma: 0,
+  ansiedad: 0,
+  energia: 0,
+  tristeza: 0,
+  estres: 0,
+  apertura: 0,
 }
+
+export const EMOTION_MAX = 2

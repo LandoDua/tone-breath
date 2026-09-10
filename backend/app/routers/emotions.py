@@ -5,12 +5,12 @@ router = APIRouter()
 
 
 class EmotionDimensions(BaseModel):
-    calma: int = 5
-    ansiedad: int = 5
-    energia: int = 5
-    tristeza: int = 5
-    enfoque: int = 5
-    apertura: int = 5
+    calma: int = 0
+    ansiedad: int = 0
+    energia: int = 0
+    tristeza: int = 0
+    estres: int = 0
+    apertura: int = 0
 
 
 class EmotionCreate(BaseModel):

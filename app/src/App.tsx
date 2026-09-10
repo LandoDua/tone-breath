@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, MotionConfig } from "framer-motion"
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { AppShell } from "./components/layout/AppShell"
@@ -23,19 +23,31 @@ export default function App() {
 
   // Emotion tracking state
   const [showEmotionBefore, setShowEmotionBefore] = useState(false)
-  const [showEmotionAfter, setShowEmotionAfter] = useState(false)
   const [emotionBefore, setEmotionBefore] = useState<EmotionDimensions | null>(null)
   const [emotionAfter, setEmotionAfter] = useState<EmotionDimensions | null>(null)
 
   const selectedRoutine = routineList.find((r) => r.id === routineId) ?? null
+
   const goHome = () => {
     setEmotionBefore(null)
     setEmotionAfter(null)
     navigate("/")
   }
+
   const goDemo = () => navigate("/demo")
-  const goToSummary = useCallback(() => navigate("/summary"), [navigate])
+
+  const sessionStopRef = useRef<() => void>(() => {})
+
+  const goToSummary = useCallback(() => {
+    sessionStopRef.current()
+    navigate("/summary")
+  }, [navigate])
+
   const session = useBreathingSession(selectedRoutine ?? undefined, duration, goToSummary)
+
+  useEffect(() => {
+    sessionStopRef.current = session.stop
+  }, [session.stop])
 
   useEffect(() => {
     if (!session.isCompleting) return
@@ -61,14 +73,9 @@ export default function App() {
     navigate("/session")
   }
 
-  // Handle emotion after → show summary
+  // Handle emotion after confirm from summary page
   const handleEmotionAfterConfirm = (dimensions: EmotionDimensions) => {
     setEmotionAfter(dimensions)
-    setShowEmotionAfter(false)
-  }
-
-  const handleEmotionAfterSkip = () => {
-    setShowEmotionAfter(false)
   }
 
   const goSelectTime = (id: string) => {
@@ -85,6 +92,7 @@ export default function App() {
   }
 
   const exitSession = () => {
+    session.stop()
     navigate("/")
   }
 
@@ -159,6 +167,7 @@ export default function App() {
                       emotionBefore={emotionBefore}
                       emotionAfter={emotionAfter}
                       onHome={goHome}
+                      onEmotionAfterConfirm={handleEmotionAfterConfirm}
                     />
                   </PageTransition>
                 ) : (
@@ -178,20 +187,13 @@ export default function App() {
         </AnimatePresence>
       </MotionConfig>
 
-      {/* Emotion Screens */}
+      {/* Emotion Before Screen */}
       <AnimatePresence>
         {showEmotionBefore && (
           <EmotionScreen
             type="before"
             onConfirm={handleEmotionBeforeConfirm}
             onSkip={handleEmotionBeforeSkip}
-          />
-        )}
-        {showEmotionAfter && (
-          <EmotionScreen
-            type="after"
-            onConfirm={handleEmotionAfterConfirm}
-            onSkip={handleEmotionAfterSkip}
           />
         )}
       </AnimatePresence>

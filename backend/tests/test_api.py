@@ -52,12 +52,12 @@ def test_create_emotion():
         json={
             "type": "before",
             "dimensions": {
-                "calma": 5,
-                "ansiedad": 7,
-                "energia": 4,
-                "tristeza": 3,
-                "enfoque": 6,
-                "apertura": 5,
+                "calma": 1,
+                "ansiedad": 2,
+                "energia": 0,
+                "tristeza": 1,
+                "estres": 2,
+                "apertura": 0,
             },
         },
     )
