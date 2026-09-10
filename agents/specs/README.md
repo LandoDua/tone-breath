@@ -9,6 +9,15 @@
 | [02-diary-notes.md](./02-diary-notes.md) | Session-linked and free-form notes, calendar integration |
 | [03-backend-architecture.md](./03-backend-architecture.md) | FastAPI + Supabase architecture, API endpoints, DB schema |
 
+## Context Documents (Fase 2 Implementation)
+
+| File | Description |
+|------|-------------|
+| [../../context/fase2-backend-emociones.md](../../context/fase2-backend-emociones.md) | Backend FastAPI + emotional tracking implementation |
+| [../../context/fase2-offline-sync.md](../../context/fase2-offline-sync.md) | Offline-first strategy with IndexedDB + Supabase sync |
+| [../../context/fase2-emociones-ui.md](../../context/fase2-emociones-ui.md) | UI/UX for emotion registration (2-3 taps) |
+| [../../context/fase2-calendario.md](../../context/fase2-calendario.md) | Emotion calendar with timeline + radar view |
+
 ## Key Decisions Summary
 
 ### Adaptive Design

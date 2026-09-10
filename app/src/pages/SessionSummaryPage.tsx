@@ -1,8 +1,11 @@
 import { useEffect } from "react"
 import { Moon, Square, Waves, X } from "lucide-react"
 import { ScreenHeader } from "../components/ui/ScreenHeader"
+import { EmotionDelta } from "../components/emotion/EmotionDelta"
+import { EmotionRadar } from "../components/emotion/EmotionRadar"
 import { formatTime } from "../lib/format"
 import type { Routine } from "../lib/routines"
+import type { EmotionDimensions } from "../components/emotion/types"
 
 const ICON_MAP = { moon: Moon, waves: Waves, square: Square } as const
 
@@ -10,6 +13,8 @@ interface SessionSummaryPageProps {
   routine: Routine
   durationMinutes: number
   elapsedSeconds: number
+  emotionBefore: EmotionDimensions | null
+  emotionAfter: EmotionDimensions | null
   onHome: () => void
 }
 
@@ -17,6 +22,8 @@ export function SessionSummaryPage({
   routine,
   durationMinutes,
   elapsedSeconds,
+  emotionBefore,
+  emotionAfter,
   onHome,
 }: SessionSummaryPageProps) {
   useEffect(() => {
@@ -30,6 +37,7 @@ export function SessionSummaryPage({
     : durationMinutes
 
   const Icon = ICON_MAP[routine.icon]
+  const hasEmotions = emotionBefore !== null && emotionAfter !== null
 
   return (
     <div className="flex min-h-[max(884px,100dvh)] flex-col">
@@ -64,9 +72,29 @@ export function SessionSummaryPage({
           Duración: {elapsedSeconds > 0 ? formatTime(elapsedSeconds) : `${displayMinutes} minutos`}
         </p>
 
+        {/* Emotion Delta Section */}
+        {hasEmotions && (
+          <div className="w-full max-w-[320px] space-y-4">
+            <div className="flex justify-center gap-4">
+              <div className="text-center">
+                <p className="text-xs text-text-muted mb-2">Antes</p>
+                <EmotionRadar dimensions={emotionBefore!} size="mini" interactive={false} />
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-text-muted mb-2">Ahora</p>
+                <EmotionRadar dimensions={emotionAfter!} size="mini" interactive={false} />
+              </div>
+            </div>
+            <EmotionDelta before={emotionBefore!} after={emotionAfter!} />
+          </div>
+        )}
+
         <div className="mt-2 max-w-[320px] rounded-2xl border border-outline/30 bg-surface/60 px-8 py-6">
           <p className="text-base font-light italic text-text-muted">
-            "Tu mente te agradece este momento de paz."
+            {hasEmotions
+              ? "Tu mente te agradece este momento de paz."
+              : "Cada respiración es un paso hacia tu bienestar."
+            }
           </p>
         </div>
       </main>

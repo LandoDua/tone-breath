@@ -1,52 +1,100 @@
 # Backend Architecture
 
+## Deployment Model: Vercel Functions (Serverless)
+
+The backend runs as a **serverless function** on Vercel, not as a persistent server. FastAPI is deployed as a single Vercel Function that scales to zero when idle and scales up with traffic. There is no process running 24/7 — each HTTP request invokes the function, which processes and responds.
+
+### Why Serverless is Sufficient
+
+The Tone Breath backend has specific characteristics that make serverless an ideal fit:
+
+1. **Stateless operations**: All requests are independent CRUD operations (create/read/update/delete). No request depends on in-memory state from a previous request. Each invocation is self-contained.
+
+2. **Short-lived execution**: Every operation — validating a JWT, querying Supabase, returning a response — completes in under 200ms. No request needs more than a few seconds of compute time. The 60s Vercel Functions limit is never approached.
+
+3. **No persistent connections needed**: The backend does not use WebSockets, Server-Sent Events, or long-polling. All communication is request-response HTTP. Supabase handles real-time subscriptions separately if needed in the future.
+
+4. **No background jobs at scale**: Scheduled tasks (e.g., recommendation engine, analytics aggregation) are handled by Supabase Edge Functions or pg_cron, not by the FastAPI server. The backend only serves API requests.
+
+5. **No filesystem dependency**: The backend reads/writes no files to disk. All data lives in Supabase (PostgreSQL + Storage). No uploads, no cached files, no session files.
+
+6. **Auth is delegated**: Authentication is fully managed by Supabase Auth. FastAPI only validates JWT tokens (stateless verification). No server-side session store is needed.
+
+7. **Cost efficiency at scale**: Serverless means paying per-request, not per-hour. For an MVP with <1000 daily active users, this is essentially free. Even at 10K DAU, the cost remains within Vercel's Hobby tier.
+
+### What Serverless Cannot Do (and why it doesn't matter yet)
+
+| Limitation | Impact on Tone Breath | Mitigation |
+|-----------|----------------------|------------|
+| No WebSockets | Not needed yet (Phase 4 may require them) | Use Supabase Realtime or upgrade to Railway |
+| No background workers | Recommendation engine (Phase 3) needs scheduling | Use Supabase pg_cron or Edge Functions |
+| Cold starts (~1-2s) | First request after idle may be slow | Fluid compute minimizes this; accept for MVP |
+| No in-memory caching | Repeated queries hit Supabase each time | Supabase has built-in connection pooling |
+| 60s max duration | Not a concern for any CRUD operation | Increase to 60s via vercel.json if needed |
+
+### Migration Path to Persistent Server
+
+If the app outgrows serverless (e.g., Phase 4 binaural features need persistent connections, or real-time collaboration is added), the FastAPI codebase migrates to Railway or similar with minimal changes:
+- Remove `vercel.json` function config
+- Add `uvicorn` startup command
+- Deploy as a standard Docker container
+- The API code itself changes nothing — only the deployment target changes.
+
 ## Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| API Framework | FastAPI | Async REST API |
+| API Framework | FastAPI | Async REST API (serverless on Vercel) |
+| Hosting | Vercel Functions | Serverless compute, auto-scaling |
 | Database | Supabase (PostgreSQL) | Data storage |
 | Auth | Supabase Auth | JWT-based authentication |
-| ORM | SQLAlchemy (async) | Database queries |
 | Validation | Pydantic v2 | Request/response schemas |
-| Migration | Alembic | Schema versioning |
+| ORM | Supabase Python Client | Database queries (direct, no SQLAlchemy) |
+| Migration | Supabase Dashboard / SQL | Schema versioning via SQL |
+
+### Why Supabase Client instead of SQLAlchemy
+
+With serverless functions, each request is isolated. SQLAlchemy's connection pooling and async session management add complexity without benefit when Supabase already provides:
+- Built-in connection pooling
+- Auto-generated REST API (PostgREST)
+- Row Level Security (RLS) for auth
+- Real-time subscriptions (future use)
+
+Using the Supabase Python client directly keeps the codebase simpler and avoids managing database connections in a serverless context.
 
 ## Project Structure
 
 ```
-tone-breath-backend/
-  app/
-    main.py                 # FastAPI app entry
-    config.py               # Settings, env vars
-    dependencies.py         # Shared dependencies
-    models/                 # SQLAlchemy models
-      user.py
-      session.py
-      emotion.py
-      note.py
-    schemas/                # Pydantic schemas
-      user.py
-      session.py
-      emotion.py
-      note.py
-    routers/                # API endpoints
-      auth.py
-      sessions.py
-      emotions.py
-      notes.py
-      recommendations.py   # Phase 3
-    services/               # Business logic
-      auth_service.py
-      session_service.py
-      emotion_service.py
-      note_service.py
-      recommendation_service.py  # Phase 3
-    utils/
-      supabase.py           # Supabase client
-      audio_analysis.py     # Future: audio processing
-  alembic/                  # Migrations
+tone-breath/
+  app/                        # Frontend (React, Vite)
+  backend/
+    app/
+      main.py                 # FastAPI app entry (Vercel entrypoint)
+      config.py               # Settings, env vars (pydantic-settings)
+      dependencies.py         # Shared dependencies (get_current_user, etc.)
+      models/                 # Pydantic models (request/response schemas)
+        user.py
+        session.py
+        emotion.py
+        note.py
+      routers/                # API endpoints
+        auth.py
+        sessions.py
+        emotions.py
+        notes.py
+        recommendations.py   # Phase 3
+      services/               # Business logic (Supabase client calls)
+        auth_service.py
+        session_service.py
+        emotion_service.py
+        note_service.py
+        recommendation_service.py  # Phase 3
+      utils/
+        supabase.py           # Supabase client initialization
   tests/
-  requirements.txt
+  requirements.txt            # Backend dependencies
+  pyproject.toml              # Vercel entrypoint config
+  vercel.json                 # Vercel function settings
   .env.example
 ```
 
@@ -275,10 +323,12 @@ class NoteResponse(BaseModel):
 2. Supabase returns JWT access_token + refresh_token
 3. Frontend stores tokens in memory (not localStorage for security)
 4. API calls include: Authorization: Bearer <access_token>
-5. FastAPI validates JWT with Supabase JWT secret
+5. FastAPI validates JWT with Supabase JWT secret (stateless, no server session)
 6. user_id extracted from JWT claims
 7. Token refresh handled automatically before expiry
 ```
+
+**Serverless note**: JWT validation is stateless — each Vercel Function invocation verifies the token independently. No server-side session store or token cache is needed. Supabase handles token refresh and revocation.
 
 ## Rate Limiting
 

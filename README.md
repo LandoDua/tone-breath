@@ -80,7 +80,15 @@ app/
     App.tsx              # rutas y orquestación
 docs/
   audio.md               # documentación del motor de sonido (tonos y reverb)
-context/                 # diseño de referencia y PDF de diseño (Stitch)
+context/                 # diseño de referencia y specs de implementación
+  proyecto.md            # contexto general del proyecto
+  ficha_diseño.md        # ficha de diseño UI/UX
+  fase2-backend-emociones.md   # backend FastAPI + emociones
+  fase2-offline-sync.md        # estrategia offline-first
+  fase2-emociones-ui.md        # UI/UX del registro emocional
+  fase2-calendario.md          # calendario de emociones
+agents/
+  specs/                 # especificaciones detalladas por fase
 Dockerfile               # build multi-stage (Node 22 + nginx)
 nginx.conf               # servidor estático con cabeceras PWA
 docker-compose.yml       # servicio para homelab (puerto 8080)
@@ -91,11 +99,34 @@ Makefile                 # make build/up/down/logs…
 
 El motor de sonido (tonos por fase, niveles de reverb, comportamiento del metrónomo y cues) está documentado en [`docs/audio.md`](docs/audio.md).
 
-## Roadmap (temprano)
+## Roadmap
 
-- Barra de volumen en la app
-- Ajustes finos de reverb y tonos
-- Registro emocional, diario y backend (ver `agents/specs/`)
+### Fase 1: MVP (Completada) ✅
+- [x] 3 rutinas de respiración
+- [x] Audio procedural con Tone.js
+- [x] Círculo de respiración animado
+- [x] SOS button
+- [x] Tema claro/oscuro
+- [x] PWA instalable
+- [x] Despliegue Docker
+
+### Fase 2: Backend + Tracking Emocional (En progreso)
+- [ ] Backend FastAPI + Supabase
+- [ ] Sistema de registro emocional (2-3 taps)
+- [ ] Calendario de emociones con timeline + radar
+- [ ] Offline-first con sincronización automática
+- [ ] Autenticación JWT
+
+### Fase 3: Recomendaciones Personalizadas
+- [ ] Rutinas adaptativas según historial
+- [ ] Ajuste dinámico de tonos y timbre
+- [ ] Detección de patrones de estrés
+
+### Fase 4: Sonidos Binaurales
+- [ ] Generación procedural de beats binaurales
+- [ ] Adaptación por usuario según respuesta medible
+
+**Docs de implementación:** Ver `context/fase2-*.md` y `agents/specs/`
 
 ## Licencia
 

@@ -15,8 +15,9 @@ Tone Breath is a PWA for mindfulness and guided breathing exercises. The app eli
 - 4 core screens: Home, Time Selector, Active Session, Session Summary
 
 ### Phase 2: Backend + Emotional Tracking
-- FastAPI + Supabase backend
-- User authentication (JWT)
+- FastAPI backend deployed as **Vercel Functions** (serverless)
+- Supabase for database (PostgreSQL) and auth (JWT)
+- Single deployment on Vercel (frontend + backend)
 - Session history and user analytics
 - **Emotional Tracking System** (radar/spider chart)
 - **Diary/Notes System** (session-linked + free-form)
@@ -73,7 +74,7 @@ The core of the app is a **centered breathing circle** — this interaction is i
 |-------|-----------|
 | Frontend | React, Vite, Tailwind CSS, Framer Motion |
 | Audio | Tone.js (Web Audio API) |
-| Backend | Python, FastAPI |
+| Backend | Python, FastAPI (Vercel Functions - serverless) |
 | Database | Supabase (PostgreSQL) |
 | Auth | Supabase Auth (JWT) |
-| Deployment | PWA (no app store) |
+| Deployment | Vercel (frontend + backend), PWA |
