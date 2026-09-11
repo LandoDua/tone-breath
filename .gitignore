@@ -62,3 +62,7 @@ app/dev-dist/
 google-stitch-mcp-*.tgz
 # Local config with secrets (kept out of git)
 opencode.json
+
+# Python
+__pycache__/
+*.pyc
