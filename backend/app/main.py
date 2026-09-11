@@ -34,9 +34,14 @@ def health():
 
 
 # Serve PWA static files
-DIST_DIR = Path(__file__).parent.parent.parent / "app" / "dist"
+_DIST_CANDIDATES = (
+    Path(__file__).parent.parent.parent / "app" / "dist",
+    Path.cwd() / "app" / "dist",
+)
 
-if DIST_DIR.exists():
+DIST_DIR = next((c for c in _DIST_CANDIDATES if (c / "index.html").exists()), None)
+
+if DIST_DIR is not None:
     app.mount("/assets", StaticFiles(directory=DIST_DIR / "assets"), name="assets")
 
     @app.get("/{full_path:path}")
