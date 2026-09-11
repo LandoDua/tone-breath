@@ -26,6 +26,7 @@ export interface BreathingSession {
   pause: () => void
   resume: () => void
   finish: () => void
+  stop: () => void
   resetCompleting: () => void
 }
 
@@ -159,6 +160,15 @@ export function useBreathingSession(
     void start()
   }, [start])
 
+  const stop = useCallback(() => {
+    stopMetronome()
+    stopClock()
+    pauseTransport()
+    setStatus('idle')
+    setIsCompleting(false)
+    setSecondsRemaining(totalRef.current)
+  }, [stopClock])
+
   const resetCompleting = useCallback(() => {
     setIsCompleting(false)
   }, [])
@@ -170,5 +180,5 @@ export function useBreathingSession(
     }
   }, [stopClock])
 
-  return { scale, status, phase, secondsRemaining, completion, isCompleting, elapsedAtFinish, start, pause, resume, finish, resetCompleting }
+  return { scale, status, phase, secondsRemaining, completion, isCompleting, elapsedAtFinish, start, pause, resume, finish, stop, resetCompleting }
 }

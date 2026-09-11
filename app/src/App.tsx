@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, MotionConfig } from "framer-motion"
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { AppShell } from "./components/layout/AppShell"
@@ -8,8 +8,10 @@ import { TimeSelectorPage } from "./pages/TimeSelectorPage"
 import { ActiveSessionPage } from "./pages/ActiveSessionPage"
 import { SessionSummaryPage } from "./pages/SessionSummaryPage"
 import { AmbientDemoPage } from "./pages/AmbientDemoPage"
+import { EmotionScreen } from "./components/emotion/EmotionScreen"
 import { routines, routineList } from "./lib/routines"
 import { useBreathingSession } from "./hooks/useBreathingSession"
+import type { EmotionDimensions } from "./components/emotion/types"
 
 const COMPLETION_ANIMATION_MS = 1800
 
@@ -19,11 +21,33 @@ export default function App() {
   const [routineId, setRoutineId] = useState<string | null>(null)
   const [duration, setDuration] = useState(5)
 
+  // Emotion tracking state
+  const [showEmotionBefore, setShowEmotionBefore] = useState(false)
+  const [emotionBefore, setEmotionBefore] = useState<EmotionDimensions | null>(null)
+  const [emotionAfter, setEmotionAfter] = useState<EmotionDimensions | null>(null)
+
   const selectedRoutine = routineList.find((r) => r.id === routineId) ?? null
-  const goHome = () => navigate("/")
+
+  const goHome = () => {
+    setEmotionBefore(null)
+    setEmotionAfter(null)
+    navigate("/")
+  }
+
   const goDemo = () => navigate("/demo")
-  const goToSummary = useCallback(() => navigate("/summary"), [navigate])
+
+  const sessionStopRef = useRef<() => void>(() => {})
+
+  const goToSummary = useCallback(() => {
+    sessionStopRef.current()
+    navigate("/summary")
+  }, [navigate])
+
   const session = useBreathingSession(selectedRoutine ?? undefined, duration, goToSummary)
+
+  useEffect(() => {
+    sessionStopRef.current = session.stop
+  }, [session.stop])
 
   useEffect(() => {
     if (!session.isCompleting) return
@@ -35,20 +59,43 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.isCompleting, goToSummary, session.resetCompleting])
 
+  // Handle emotion before → start session
+  const handleEmotionBeforeConfirm = (dimensions: EmotionDimensions) => {
+    setEmotionBefore(dimensions)
+    setShowEmotionBefore(false)
+    session.start()
+    navigate("/session")
+  }
+
+  const handleEmotionBeforeSkip = () => {
+    setShowEmotionBefore(false)
+    session.start()
+    navigate("/session")
+  }
+
+  // Handle emotion after confirm from summary page
+  const handleEmotionAfterConfirm = (dimensions: EmotionDimensions) => {
+    setEmotionAfter(dimensions)
+  }
+
   const goSelectTime = (id: string) => {
     setRoutineId(id)
     navigate("/select-time")
   }
+
   const startSession = () => {
-    session.start()
-    navigate("/session")
+    setShowEmotionBefore(true)
   }
+
   const finishSession = () => {
     session.finish()
   }
+
   const exitSession = () => {
+    session.stop()
     navigate("/")
   }
+
   const startSos = () => {
     setRoutineId("coherent")
     setDuration(5)
@@ -117,7 +164,10 @@ export default function App() {
                       routine={selectedRoutine}
                       durationMinutes={duration}
                       elapsedSeconds={session.elapsedAtFinish}
+                      emotionBefore={emotionBefore}
+                      emotionAfter={emotionAfter}
                       onHome={goHome}
+                      onEmotionAfterConfirm={handleEmotionAfterConfirm}
                     />
                   </PageTransition>
                 ) : (
@@ -136,6 +186,17 @@ export default function App() {
           </Routes>
         </AnimatePresence>
       </MotionConfig>
+
+      {/* Emotion Before Screen */}
+      <AnimatePresence>
+        {showEmotionBefore && (
+          <EmotionScreen
+            type="before"
+            onConfirm={handleEmotionBeforeConfirm}
+            onSkip={handleEmotionBeforeSkip}
+          />
+        )}
+      </AnimatePresence>
     </AppShell>
   )
 }
