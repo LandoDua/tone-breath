@@ -8,6 +8,7 @@
 | [01-emotional-tracking.md](./01-emotional-tracking.md) | Radar chart system, dimensions, registration flow, data model |
 | [02-diary-notes.md](./02-diary-notes.md) | Session-linked and free-form notes, calendar integration |
 | [03-backend-architecture.md](./03-backend-architecture.md) | FastAPI + Supabase architecture, API endpoints, DB schema |
+| [04-vercel-serverless-deploy.md](./04-vercel-serverless-deploy.md) | Actual Vercel deployment: single-function model, vercel.json, requirements.txt placement, verified flows |
 
 ## Context Documents (Fase 2 Implementation)
 
